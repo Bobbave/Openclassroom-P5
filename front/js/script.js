@@ -7,13 +7,14 @@ apiGet
 
         let products = await response.json();
 
-        function getProducts(){
+        function getItems(){
             for (let i = 0; i < products.length; i++) {
 
                 const items = document.querySelector("#items");
     
                 const link = document.createElement("a");
-    
+                link.href = `../html/product.html?id=${products[i]._id}`;
+
                 const article = document.createElement("article");
     
                 const itemImage = document.createElement("img");
@@ -34,6 +35,6 @@ apiGet
             }
         }
 
-        getProducts();
+        getItems();
 
-    })
+    });
