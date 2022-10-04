@@ -9,11 +9,11 @@ let idProduct = parameter.get("id");
 let apiGet = fetch (`${API_URL}/${idProduct}`);
 
 apiGet
-    .then (async function (res){
+    .then (async function (response){
         
         // Getting the product's informations from the promise (apiGet)
 
-        let product = await res.json();
+        let product = await response.json();
          
         function getItem(){
 
