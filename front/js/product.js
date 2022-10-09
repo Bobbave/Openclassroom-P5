@@ -12,18 +12,18 @@ apiGet
     .then (async function (response){
         
         // Getting the product's informations from the promise (apiGet)
-
+        
         let product = await response.json();
          
         function getItem(){
 
             // Setting up the different information of the product
 
-            const imgDiv = document.querySelector(".item__img");
+            const imageDiv = document.querySelector(".item__img");
             const image = document.createElement("img");
             image.src = product.imageUrl;
             image.alt = product.altTxt;
-            imgDiv.appendChild(image);
+            imageDiv.appendChild(image);
 
             const name = document.querySelector("#title");
             name.textContent = product.name
@@ -49,38 +49,46 @@ apiGet
     });
 
 //----------------------------------------------------------------Adding to cart----------------------------------------------------------------
+function setUpLocalStorage(){
 
-const button = document.querySelector("#addToCart");
+    const button = document.querySelector("#addToCart");
 
-button.addEventListener("click", function(){
+    button.addEventListener("click", function(){
 
-    const quantity = document.querySelector("#quantity").value;
-    const color = document.querySelector("#colors").value;
+        const quantity = document.querySelector("#quantity").value;
+        const color = document.querySelector("#colors").value;
 
-    const addItem = {
-        id: idProduct,
-        quantity: Number(quantity),
-        color: color,
-    };
+        const addItem = {
+            id: idProduct,
+            quantity: Number(quantity),
+            color: color,
+        };
 
-    let product = JSON.parse(localStorage.getItem("itemsOrdered"));
-    if (product == null){
-        product = [];
-        product.push(addItem);
-        localStorage.setItem("itemsOrdered", JSON.stringify(product));
-    }
-    else {
-        let findItem = product.find (
-            (p) => p.color == addItem.color && p.id == addItem.id
-        );
-        if (findItem != undefined)
-        {
-            findItem.quantity = parseFloat(findItem.quantity) + addItem.quantity;
-            localStorage.setItem("itemsOrdered", JSON.stringify(product));
+        let productOrdered = JSON.parse(localStorage.getItem("itemsOrdered"));
+
+        if (productOrdered == null){
+            productOrdered = [];
+            productOrdered.push(addItem);
+            localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
         }
+        
         else {
-            product.push(addItem);
-            localStorage.setItem("itemsOrdered", JSON.stringify(product));
-        }
-}});
+            let findItem = productOrdered.find (
+                (p) => p.color == addItem.color && p.id == addItem.id
+            );
 
+            if (findItem != undefined)
+            {
+                findItem.quantity = parseFloat(findItem.quantity) + addItem.quantity;
+                localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
+            }
+
+            else {
+                productOrdered.push(addItem);
+                localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
+            }
+        }
+    });
+}
+
+setUpLocalStorage();
