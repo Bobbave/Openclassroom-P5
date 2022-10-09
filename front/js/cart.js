@@ -1,9 +1,12 @@
 import { API_URL } from "../js/module.js";
 
+//Getting the local storage
 let item = JSON.parse(localStorage.getItem("itemsOrdered"));
 
+//Creating array to stock the prices of cart items
 let prices = [];
 
+//Parsing items in localstorage to create the cart summary
 for (let i = 0; i < item.length; i++){
 
     let apiGet = fetch (`${API_URL}/${item[i].id}`);
@@ -13,6 +16,7 @@ for (let i = 0; i < item.length; i++){
 
             let products = await response.json();
 
+            //Function creating HTML tags of cart items and filling them
             function getItems(){
 
                 const cartItem = document.querySelector("#cart__items");
@@ -66,18 +70,28 @@ for (let i = 0; i < item.length; i++){
 
                 const inputQuantity = document.createElement("input");
                 inputQuantity.type = "number";
-                inputQuantity.className ="itemQuantity";
                 inputQuantity.name = "itemQuantity";
+                inputQuantity.className ="itemQuantity";
                 inputQuantity.min = "1";
                 inputQuantity.max = "100";
-                inputQuantity.value = item[i].quantity;
                 inputQuantity.textContent = item[i].quantity;
+                inputQuantity.value = item[i].quantity;
                 divSettingsQuantity.appendChild(inputQuantity);
+
+                const deleteDiv = document.createElement("div");
+                deleteDiv.className = "cart__item__content__settings__delete";
+                divSettings.appendChild(deleteDiv);
+
+                const deleteItem = document.createElement("p");
+                deleteItem.textContent = "Supprimer";
+                deleteItem.className = "deleteItem";
+                deleteDiv.appendChild(deleteItem);
             }
 
             getItems();
 
             let totalOrder = 0;
+            //Function to calculate total price of cart
             function setTotalPrice(){
                 let articlePrice = item[i].quantity * products.price ;
                 prices.push(articlePrice);
@@ -88,6 +102,7 @@ for (let i = 0; i < item.length; i++){
 
             setTotalPrice();
 
+            //Function to show total price and number of items
             function showPricesQuantity(){
                 const totalArticle = document.querySelector("#totalQuantity");
                 totalArticle.textContent = item.length;
@@ -96,5 +111,33 @@ for (let i = 0; i < item.length; i++){
             }
 
             showPricesQuantity();
+
+            //Function to suppress items of the cart
+            function deleteProduct(){
+                let deleteList = document.querySelectorAll(".deleteItem");
+                Array.from(deleteList);
+                deleteList[i].addEventListener("click", function(){
+                    item.splice(i, 1);
+                    localStorage.setItem("itemsOrdered", JSON.stringify(item));
+                    window.location.reload();
+                })
+            }
+
+            deleteProduct();
+
+            //Function to change the number of an item in cart
+            function modifyProduct(){
+                let quantityList = document.querySelectorAll(".itemQuantity");
+                Array.from(quantityList);
+                quantityList[i].addEventListener("change", function () {
+                    item[i].quantity = parseInt(this.value);
+                    localStorage.setItem("itemsOrdered", JSON.stringify(item));
+                    window.location.reload();
+                });
+            }
+
+            modifyProduct();
+            
         })
 }
+
