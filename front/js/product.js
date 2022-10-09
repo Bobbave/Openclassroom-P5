@@ -49,29 +49,35 @@ apiGet
     });
 
 //----------------------------------------------------------------Adding to cart----------------------------------------------------------------
+//Function to add selected item to the localstorage
 function setUpLocalStorage(){
 
     const button = document.querySelector("#addToCart");
 
+    //Action to do when the user click on "Ajouter au panier"
     button.addEventListener("click", function(){
 
         const quantity = document.querySelector("#quantity").value;
         const color = document.querySelector("#colors").value;
 
+        //Creating JS object to stock the quantity and color
         const addItem = {
             id: idProduct,
             quantity: Number(quantity),
             color: color,
         };
 
+        //Retrieving the cart 
         let productOrdered = JSON.parse(localStorage.getItem("itemsOrdered"));
 
+        //If cart empty
         if (productOrdered == null){
             productOrdered = [];
             productOrdered.push(addItem);
             localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
         }
         
+        //If there is already this product with the same color
         else {
             let findItem = productOrdered.find (
                 (p) => p.color == addItem.color && p.id == addItem.id
@@ -83,6 +89,7 @@ function setUpLocalStorage(){
                 localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
             }
 
+            //Other situation => add the new item to cart
             else {
                 productOrdered.push(addItem);
                 localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
