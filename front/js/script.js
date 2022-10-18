@@ -11,16 +11,13 @@ apiGet
             if (response.ok){
                 
                 //Getting the products informations
-                
                 let products = await response.json();
 
                 //This function's goal is to display the products in the home page
-
                 function getItems(){
                     for (let i = 0; i < products.length; i++) {
 
                         //Setting and creating the HTML tags 
-
                         const items = document.querySelector("#items");
             
                         const link = document.createElement("a");
