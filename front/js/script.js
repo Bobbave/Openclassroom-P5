@@ -1,16 +1,14 @@
-import { API_URL } from "../js/module.js";
+import {API_URL} from "../js/module.js";
 
 const apiGet = fetch (API_URL);
-
 //Imported and fetched the API's URL, this means apiGet will return a promise
 
 apiGet
     .then (async function (response){
-
         try{
             if (response.ok){
-                
-                //Getting the products informations
+
+                //Getting the products informations from the promise
                 let products = await response.json();
 
                 //This function's goal is to display the products in the home page
@@ -44,6 +42,7 @@ apiGet
                 }
 
                 getItems();
+
             }
         } catch (error) {
             console.log(error);

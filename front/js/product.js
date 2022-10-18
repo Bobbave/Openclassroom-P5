@@ -1,8 +1,7 @@
-import { API_URL } from "../js/module.js";
+import {API_URL} from "../js/module.js";
 
 //----------------------------------------------------------------Product----------------------------------------------------------------
 //Retrieve the product's ID in the URL
-
 let parameter = new URLSearchParams(window.location.search);
 let idProduct = parameter.get("id");
 
@@ -12,13 +11,11 @@ apiGet
     .then (async function (response){
         
         // Getting the product's informations from the promise (apiGet)
-        
         let product = await response.json();
          
         function getItem(){
 
             // Setting up the different information of the product
-
             const imageDiv = document.querySelector(".item__img");
             const image = document.createElement("img");
             image.src = product.imageUrl;
@@ -35,8 +32,8 @@ apiGet
             description.textContent = product.description;
 
             const colorDiv = document.querySelector("#colors");
-            for (let i = 0; i < product.colors.length; i++)
-            {
+
+            for (let i = 0; i < product.colors.length; i++){
                 let color = document.createElement("option");
                 color.value = product.colors[i];
                 color.textContent = product.colors[i]
@@ -70,6 +67,18 @@ function setUpLocalStorage(){
         //Retrieving the cart 
         let productOrdered = JSON.parse(localStorage.getItem("itemsOrdered"));
 
+        let alertQuantity = "La quantité ne peut pas dépasser 100";
+        let alertAdded = "Le produit a été ajouté au panier";
+
+        if (quantity > 100){
+            alert("Vous ne pouvez pas commander plus de 100 fois le même produit")
+            return;
+        }
+        if (quantity === "" || color ===""){
+            alert("Il faut choisir une quantité et uné couleure");
+            return;
+        }
+
         //If cart empty
         if (productOrdered == null){
             productOrdered = [];
@@ -83,10 +92,15 @@ function setUpLocalStorage(){
                 (p) => p.color == addItem.color && p.id == addItem.id
             );
 
-            if (findItem != undefined)
-            {
+            if (findItem != undefined){
                 findItem.quantity = parseFloat(findItem.quantity) + addItem.quantity;
-                localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
+                if(findItem.quantity <= 100){
+                    alert(alertAdded);
+                    localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
+                }
+                else {
+                    alert(alertQuantity);
+                }
             }
 
             //Other situation => add the new item to cart

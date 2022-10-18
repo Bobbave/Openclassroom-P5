@@ -1,4 +1,10 @@
-import { API_URL } from "../js/module.js";
+import {API_URL} from "../js/module.js";
+
+//Creating array to stock the prices of cart items
+let prices = [];
+
+//Array to send product to the API
+let products = [];
 
 //Getting the local storage
 let item = JSON.parse(localStorage.getItem("itemsOrdered"));
@@ -6,12 +12,6 @@ let item = JSON.parse(localStorage.getItem("itemsOrdered"));
 //Cart array to check if empty at the end when ordering
 const cart = [];
 cart.push(item);
-
-//Creating array to stock the prices of cart items
-let prices = [];
-
-//Array to send product to the API
-let products = [];
 
 //----------------------------------------------------------------------------Cart----------------------------------------------------------------------------//
 //Parsing items in localstorage to create the cart summary
@@ -147,16 +147,18 @@ for (let i = 0; i < item.length; i++){
                 }
 
                 modifyProduct();
+
             }
+
             setItemsCart();
 
             //Adding products ordered to the array, to be sent to the api
             products.push(item[i].id);
+
         });
 }
 
 //----------------------------------------------------------------------------Form----------------------------------------------------------------------------//
-
 //Getting HTML tags
 let firstName = document.querySelector("#firstName");
 let firstNameMessage = document.querySelector("#firstNameErrorMsg");
@@ -265,6 +267,7 @@ let oneFieldError = "Au moins un champ présente une erreure";
 let emptyOrder = "Le panier est vide";
 
 function confirmCart (){
+
     const order = document.querySelector("#order");
 
     //Eventlistener to check if everything is ok
@@ -300,6 +303,7 @@ function confirmCart (){
                 city: city.value,
                 email: email.value,
             };
+
             const apiPost = fetch(`${ API_URL }/order`, {
                 method: "POST",
                 body: JSON.stringify({ contact, products}),
@@ -312,6 +316,7 @@ function confirmCart (){
                 .then (async function (response){
                     try{
                         const apiContent = await response.json();
+                        localStorage.clear("itemsOrdered");
                         window.location =`../html/confirmation.html?id=${apiContent.orderId}`;
                     } catch (error) {
                         console.log(error);
