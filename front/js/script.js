@@ -7,7 +7,6 @@ apiGet
     .then (async function (response){
         try{
             if (response.ok){
-
                 //Getting the products informations from the promise
                 let products = await response.json();
 
@@ -42,7 +41,6 @@ apiGet
                 }
 
                 getItems();
-
             }
         } catch (error) {
             console.log(error);

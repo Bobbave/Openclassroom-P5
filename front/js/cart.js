@@ -13,152 +13,155 @@ let item = JSON.parse(localStorage.getItem("itemsOrdered"));
 const cart = [];
 cart.push(item);
 
-//----------------------------------------------------------------------------Cart----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------Setting cart----------------------------------------------------------------------------//
 //Parsing items in localstorage to create the cart summary
 for (let i = 0; i < item.length; i++){
-
     let apiGet = fetch (`${API_URL}/${item[i].id}`);
 
     apiGet
         .then (async function(response){
+            try{
+                if (response.ok){
+                    let content = await response.json();
 
-            let content = await response.json();
+                    //Function to regroup the cart's funtions
+                    function setItemsCart(){
+                        //Function creating HTML tags of cart items and filling them
+                        function getItems(){
+                            const cartItem = document.querySelector("#cart__items");
 
-            //
-            function setItemsCart(){
-                //Function creating HTML tags of cart items and filling them
-                function getItems(){
+                            const article = document.createElement("article");
+                            article.className = "cart__item";
+                            article.dataset.id = item[i].id;
+                            article.dataset.color = item[i].color;
+                            cartItem.appendChild(article);
 
-                    const cartItem = document.querySelector("#cart__items");
+                            const divItemImage = document.createElement("div");
+                            divItemImage.className = "cart__item__img";
+                            article.appendChild(divItemImage);
 
-                    const article = document.createElement("article");
-                    article.className = "cart__item";
-                    article.dataset.id = item[i].id;
-                    article.dataset.color = item[i].color;
-                    cartItem.appendChild(article);
+                            const image = document.createElement("img");
+                            image.src = content.imageUrl;
+                            image.alt = content.altTxt;
+                            divItemImage.appendChild(image);
 
-                    const divItemImage = document.createElement("div");
-                    divItemImage.className = "cart__item__img";
-                    article.appendChild(divItemImage);
+                            const divItemContent = document.createElement("div");
+                            divItemContent.className = "cart__item__content";
+                            article.appendChild(divItemContent);
 
-                    const image = document.createElement("img");
-                    image.src = content.imageUrl;
-                    image.alt = content.altTxt;
-                    divItemImage.appendChild(image);
+                            const divDescription = document.createElement("div");
+                            divDescription.className = "cart__item__content__description";
+                            divItemContent.appendChild(divDescription);
 
-                    const divItemContent = document.createElement("div");
-                    divItemContent.className = "cart__item__content";
-                    article.appendChild(divItemContent);
+                            const name = document.createElement("h2");
+                            name.textContent = content.name;
+                            divDescription.appendChild(name);
 
-                    const divDescription = document.createElement("div");
-                    divDescription.className = "cart__item__content__description";
-                    divItemContent.appendChild(divDescription);
+                            const color = document.createElement("p");
+                            color.textContent = item[i].color;
+                            divDescription.appendChild(color);
 
-                    const name = document.createElement("h2");
-                    name.textContent = content.name;
-                    divDescription.appendChild(name);
+                            const price = document.createElement("p");
+                            price.textContent = content.price + " €";
+                            divDescription.appendChild(price);
 
-                    const color = document.createElement("p");
-                    color.textContent = item[i].color;
-                    divDescription.appendChild(color);
+                            const divSettings = document.createElement("div");
+                            divSettings.className = "cart__item__content__settings";
+                            divItemContent.appendChild(divSettings);
 
-                    const price = document.createElement("p");
-                    price.textContent = content.price + " €";
-                    divDescription.appendChild(price);
+                            const divSettingsQuantity = document.createElement("div");
+                            divSettingsQuantity.className = "cart__item__content__settings__quantity";
+                            divSettings.appendChild(divSettingsQuantity);
 
-                    const divSettings = document.createElement("div");
-                    divSettings.className = "cart__item__content__settings";
-                    divItemContent.appendChild(divSettings);
+                            const quantity = document.createElement("p");
+                            quantity.textContent = "Qté : ";
+                            divSettingsQuantity.appendChild(quantity);
 
-                    const divSettingsQuantity = document.createElement("div");
-                    divSettingsQuantity.className = "cart__item__content__settings__quantity";
-                    divSettings.appendChild(divSettingsQuantity);
+                            const inputQuantity = document.createElement("input");
+                            inputQuantity.type = "number";
+                            inputQuantity.name = "itemQuantity";
+                            inputQuantity.className ="itemQuantity";
+                            inputQuantity.min = "1";
+                            inputQuantity.max = "100";
+                            inputQuantity.textContent = item[i].quantity;
+                            inputQuantity.value = item[i].quantity;
+                            divSettingsQuantity.appendChild(inputQuantity);
 
-                    const quantity = document.createElement("p");
-                    quantity.textContent = "Qté : ";
-                    divSettingsQuantity.appendChild(quantity);
+                            const deleteDiv = document.createElement("div");
+                            deleteDiv.className = "cart__item__content__settings__delete";
+                            divSettings.appendChild(deleteDiv);
 
-                    const inputQuantity = document.createElement("input");
-                    inputQuantity.type = "number";
-                    inputQuantity.name = "itemQuantity";
-                    inputQuantity.className ="itemQuantity";
-                    inputQuantity.min = "1";
-                    inputQuantity.max = "100";
-                    inputQuantity.textContent = item[i].quantity;
-                    inputQuantity.value = item[i].quantity;
-                    divSettingsQuantity.appendChild(inputQuantity);
+                            const deleteItem = document.createElement("p");
+                            deleteItem.textContent = "Supprimer";
+                            deleteItem.className = "deleteItem";
+                            deleteDiv.appendChild(deleteItem);
+                        }
 
-                    const deleteDiv = document.createElement("div");
-                    deleteDiv.className = "cart__item__content__settings__delete";
-                    divSettings.appendChild(deleteDiv);
+                        getItems();
 
-                    const deleteItem = document.createElement("p");
-                    deleteItem.textContent = "Supprimer";
-                    deleteItem.className = "deleteItem";
-                    deleteDiv.appendChild(deleteItem);
-                }
+                        let totalOrder = 0;
+                        //Function to calculate total price of cart
+                        function setTotalPrice(){
+                            let articlePrice = item[i].quantity * content.price ;
+                            prices.push(articlePrice);
 
-                getItems();
+                            for (let i = 0; i < prices.length; i++){
+                                totalOrder += prices[i];
+                            }
+                        }
 
-                let totalOrder = 0;
-                //Function to calculate total price of cart
-                function setTotalPrice(){
-                    let articlePrice = item[i].quantity * content.price ;
-                    prices.push(articlePrice);
-                    for (let i = 0; i < prices.length; i++){
-                        totalOrder += prices[i];
+                        setTotalPrice();
+
+                        //Function to show total price and number of items
+                        function showPricesQuantity(){
+                            const totalArticle = document.querySelector("#totalQuantity");
+                            totalArticle.textContent = item.length;
+                            const totalPrice = document.querySelector("#totalPrice");
+                            totalPrice.textContent = totalOrder;
+                        }
+
+                        showPricesQuantity();
+
+                        //Function to suppress items of the cart
+                        function deleteProduct(){
+                            let deleteList = document.querySelectorAll(".deleteItem");
+                            Array.from(deleteList);
+
+                            deleteList[i].addEventListener("click", function(){
+                                item.splice(i, 1);
+                                localStorage.setItem("itemsOrdered", JSON.stringify(item));
+                                window.location.reload();
+                            });
+                        }
+
+                        deleteProduct();
+
+                        //Function to change the number of an item in cart
+                        function modifyProduct(){
+                            let quantityList = document.querySelectorAll(".itemQuantity");
+                            Array.from(quantityList);
+
+                            quantityList[i].addEventListener("change", function () {
+                                item[i].quantity = parseInt(this.value);
+                                localStorage.setItem("itemsOrdered", JSON.stringify(item));
+                                window.location.reload();
+                            });
+                        }
+                        modifyProduct();
                     }
+
+                    setItemsCart();
+
+                    //Adding products ordered to the array, to be sent to the api
+                    products.push(item[i].id);
                 }
-
-                setTotalPrice();
-
-                //Function to show total price and number of items
-                function showPricesQuantity(){
-                    const totalArticle = document.querySelector("#totalQuantity");
-                    totalArticle.textContent = item.length;
-                    const totalPrice = document.querySelector("#totalPrice");
-                    totalPrice.textContent = totalOrder;
-                }
-
-                showPricesQuantity();
-
-                //Function to suppress items of the cart
-                function deleteProduct(){
-                    let deleteList = document.querySelectorAll(".deleteItem");
-                    Array.from(deleteList);
-                    deleteList[i].addEventListener("click", function(){
-                        item.splice(i, 1);
-                        localStorage.setItem("itemsOrdered", JSON.stringify(item));
-                        window.location.reload();
-                    });
-                }
-
-                deleteProduct();
-
-                //Function to change the number of an item in cart
-                function modifyProduct(){
-                    let quantityList = document.querySelectorAll(".itemQuantity");
-                    Array.from(quantityList);
-                    quantityList[i].addEventListener("change", function () {
-                        item[i].quantity = parseInt(this.value);
-                        localStorage.setItem("itemsOrdered", JSON.stringify(item));
-                        window.location.reload();
-                    });
-                }
-
-                modifyProduct();
-
+            } catch (Error){
+                console.log(Error);
             }
-
-            setItemsCart();
-
-            //Adding products ordered to the array, to be sent to the api
-            products.push(item[i].id);
-
         });
 }
 
-//----------------------------------------------------------------------------Form----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------Verify form----------------------------------------------------------------------------//
 //Getting HTML tags
 let firstName = document.querySelector("#firstName");
 let firstNameMessage = document.querySelector("#firstNameErrorMsg");
@@ -187,8 +190,7 @@ let emailRegex = new RegExp("^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$");
 
 //Big function to set form elements
 function setFormElements(){
-
-    //First name
+    //Function to verify first name
     function setFirstName(){
         firstName.addEventListener("input", function(){
             if (textRegex.test(firstName.value)){
@@ -202,7 +204,7 @@ function setFormElements(){
 
     setFirstName();
 
-    //Last name
+    //Function to verify last name
     function setLastName(){
         lastName.addEventListener("input", function(){
             if (textRegex.test(lastName.value)){
@@ -216,7 +218,7 @@ function setFormElements(){
 
     setLastName();
 
-    //Adress
+    //Function to verify adress
     function setAdress(){
         adress.addEventListener("input", function(){
             if (adressRegex.test(adress.value)){
@@ -230,6 +232,7 @@ function setFormElements(){
 
     setAdress();
 
+    //Function to verify city
     function setCity(){
         city.addEventListener("input", function(){
             if (cityRegex.test(city.value)){
@@ -243,7 +246,7 @@ function setFormElements(){
 
     setCity();
 
-    //E-mail
+    //Function to verify email
     function setEmail(){
         email.addEventListener("input", function(){
             if (emailRegex.test(email.value)){
@@ -261,24 +264,23 @@ function setFormElements(){
 
 setFormElements();
 
-//----------------------------------------------------------------------------Comfirm----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------Comfirm order----------------------------------------------------------------------------//
 
 let oneFieldError = "Au moins un champ présente une erreure";
 let emptyOrder = "Le panier est vide";
 
+//Function to verify form information and comfirming the order
 function confirmCart (){
-
     const order = document.querySelector("#order");
 
     //Eventlistener to check if everything is ok
     order.addEventListener("click", function(onClick){
-
         if (
-            textRegex.test(firstName.value) == false ||
-            textRegex.test(lastName.value) == false ||
-            adressRegex.test(adress.value) == false ||
-            cityRegex.test(city.value) == false ||
-            emailRegex.test(email.value) == false
+            textRegex.test(firstName.value) != true ||
+            textRegex.test(lastName.value) != true||
+            adressRegex.test(adress.value) != true ||
+            cityRegex.test(city.value) != true ||
+            emailRegex.test(email.value) != true
         ){
             onClick.preventDefault();
             alert(oneFieldError);
@@ -293,7 +295,6 @@ function confirmCart (){
 
         //If everything is ok
         else{
-
             onClick.preventDefault();
 
             let contact = {
@@ -306,10 +307,10 @@ function confirmCart (){
 
             const apiPost = fetch(`${ API_URL }/order`, {
                 method: "POST",
-                body: JSON.stringify({ contact, products}),
                 headers: {
                     "Content-Type": "application/json",
                   },
+                body: JSON.stringify({ contact, products}),
             });
 
             apiPost

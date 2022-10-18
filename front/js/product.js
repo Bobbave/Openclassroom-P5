@@ -9,51 +9,50 @@ let apiGet = fetch (`${API_URL}/${idProduct}`);
 
 apiGet
     .then (async function (response){
-        
-        // Getting the product's informations from the promise (apiGet)
-        let product = await response.json();
-         
-        function getItem(){
+        if (response.ok){
+            // Getting the product's informations from the promise (apiGet)
+            let product = await response.json();
+            
+            //Function to get and set the HTML tags of the product
+            function getItem(){
 
-            // Setting up the different information of the product
-            const imageDiv = document.querySelector(".item__img");
-            const image = document.createElement("img");
-            image.src = product.imageUrl;
-            image.alt = product.altTxt;
-            imageDiv.appendChild(image);
+                // Setting up the different information of the product
+                const imageDiv = document.querySelector(".item__img");
+                const image = document.createElement("img");
+                image.src = product.imageUrl;
+                image.alt = product.altTxt;
+                imageDiv.appendChild(image);
 
-            const name = document.querySelector("#title");
-            name.textContent = product.name
+                const name = document.querySelector("#title");
+                name.textContent = product.name
 
-            const price = document.querySelector("#price");
-            price.textContent = product.price;
+                const price = document.querySelector("#price");
+                price.textContent = product.price;
 
-            const description = document.querySelector("#description");
-            description.textContent = product.description;
+                const description = document.querySelector("#description");
+                description.textContent = product.description;
 
-            const colorDiv = document.querySelector("#colors");
+                const colorDiv = document.querySelector("#colors");
 
-            for (let i = 0; i < product.colors.length; i++){
-                let color = document.createElement("option");
-                color.value = product.colors[i];
-                color.textContent = product.colors[i]
-                colorDiv.appendChild(color);
+                for (let i = 0; i < product.colors.length; i++){
+                    let color = document.createElement("option");
+                    color.value = product.colors[i];
+                    color.textContent = product.colors[i]
+                    colorDiv.appendChild(color);
+                }
             }
-        }
 
-        getItem();
-        
+            getItem();
+        }
     });
 
 //----------------------------------------------------------------Adding to cart----------------------------------------------------------------
 //Function to add selected item to the localstorage
 function setUpLocalStorage(){
-
     const button = document.querySelector("#addToCart");
 
     //Action to do when the user click on "Ajouter au panier"
     button.addEventListener("click", function(){
-
         const quantity = document.querySelector("#quantity").value;
         const color = document.querySelector("#colors").value;
 
@@ -75,7 +74,7 @@ function setUpLocalStorage(){
             return;
         }
         if (quantity === "" || color ===""){
-            alert("Il faut choisir une quantité et uné couleure");
+            alert("Il faut choisir une quantité et une couleure");
             return;
         }
 
@@ -94,6 +93,7 @@ function setUpLocalStorage(){
 
             if (findItem != undefined){
                 findItem.quantity = parseFloat(findItem.quantity) + addItem.quantity;
+
                 if(findItem.quantity <= 100){
                     alert(alertAdded);
                     localStorage.setItem("itemsOrdered", JSON.stringify(productOrdered));
